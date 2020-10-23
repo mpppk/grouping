@@ -7,6 +7,7 @@ import (
 	"github.com/mpppk/cli-template/cmd/option"
 	"github.com/spf13/afero"
 	"os"
+	"sort"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -18,7 +19,6 @@ func newEvalCmd(fs afero.Fs) (*cobra.Command, error) {
 		Short: "evaluate groups",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// groupごとの
 			conf, err := option.NewEvalCmdConfigFromViper(args)
 			if err != nil {
 				return err
@@ -54,6 +54,19 @@ type Group struct {
 	members []*Member
 }
 
+func (g *Group) getMemberPairs() (pairs [][]*Member) {
+	for i, member := range g.members {
+		for j := i+1; j < len(g.members); j++ {
+			members := []*Member{member, g.members[j]}
+			sort.Slice(members, func(i, j int) bool {
+				return members[i].Name > members[j].Name
+			})
+			pairs = append(pairs, members)
+		}
+	}
+	return
+}
+
 type Groups map[GroupID] *Group
 
 func NewGroups() Groups {
@@ -73,22 +86,50 @@ func (g Groups) addGroups(member *Member, idList ...GroupID) {
 	}
 }
 
-func eval(members []*Member, groups []*Group) int {
-	m := map[MemberID]map[MemberID]struct{}{}
-	for _, group := range groups {
-		for i, member := range group.members {
-			for j := i + 1; j < len(group.members); j++ {
-				member2 := group.members[j]
-				m[member.ID][member2.ID] = struct{}{}
+type PairMap map[string]map[string]int
+
+func (p PairMap) AddPairs(pairs [][]*Member) error {
+	for _, pair := range pairs {
+		if err := p.AddPair(pair); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p PairMap) AddPair(pair []*Member) error {
+	if len(pair) != 2 {
+		return fmt.Errorf("invalid pair because length is not 2. actual %d", len(pair))
+	}
+	name0, name1 := pair[0].Name, pair[1].Name
+	if _, ok := p[name0]; !ok {
+		p[name0] = map[string]int{}
+	}
+
+	p[name0][name1]++
+	return nil
+}
+
+func (p PairMap) CountDup() (cnt int) {
+	for _, m := range p {
+		for _, c := range m {
+			cnt += c-1
+		}
+	}
+	return
+}
+
+func Eval(groupsList []Groups) (int, error) {
+	pairMap := PairMap{}
+	for _, groups := range groupsList {
+		for _, group := range groups {
+			if err := pairMap.AddPairs(group.getMemberPairs()); err != nil {
+				return 0, fmt.Errorf("failed to add pairs to PairMap: %w", err)
 			}
 		}
 	}
 
-	cnt := 0
-	for _, m2 := range m {
-		cnt += len(m2)
-	}
-	return cnt
+	return pairMap.CountDup(), nil
 }
 
 func parseGroupFile(filePath string) ([]Groups, error) {

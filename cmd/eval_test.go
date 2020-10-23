@@ -77,3 +77,100 @@ func Test_parseGroupLines(t *testing.T) {
 		})
 	}
 }
+
+func TestEval(t *testing.T) {
+	type args struct {
+		groupsList []Groups
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    int
+		wantErr bool
+	}{
+		{
+			args:    args{
+				groupsList: []Groups{
+					{
+						1: &Group{
+							members: []*Member{
+								{Name: "alice"},
+								{Name: "bob"},
+							},
+						},
+						2: &Group{
+							members: []*Member{
+								{Name: "carol"},
+								{Name: "dave"},
+							},
+						},
+					},
+					{
+						1: &Group{
+							members: []*Member{
+								{Name: "carol"},
+								{Name: "dave"},
+							},
+						},
+						2: &Group{
+							members: []*Member{
+								{Name: "alice"},
+								{Name: "bob"},
+							},
+						},
+					},
+				},
+			},
+			want:    2,
+			wantErr: false,
+		},
+		{
+			args:    args{
+				groupsList: []Groups{
+					{
+						1: &Group{
+							members: []*Member{
+								{Name: "alice"},
+								{Name: "bob"},
+							},
+						},
+						2: &Group{
+							members: []*Member{
+								{Name: "carol"},
+								{Name: "dave"},
+							},
+						},
+					},
+					{
+						1: &Group{
+							members: []*Member{
+								{Name: "alice"},
+								{Name: "carol"},
+							},
+						},
+						2: &Group{
+							members: []*Member{
+								{Name: "bob"},
+								{Name: "dave"},
+							},
+						},
+					},
+				},
+			},
+			want:    0,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Eval(tt.args.groupsList)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Eval() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Eval() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
