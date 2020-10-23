@@ -1,4 +1,4 @@
-package cmd
+package domain
 
 import (
 	"reflect"
@@ -16,8 +16,8 @@ func Test_parseGroupLines(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			args:    args{
-				lines: [][]string {
+			args: args{
+				lines: [][]string{
 					{"NAME", "1st", "2nd"},
 					{"alice", "1", "2"},
 					{"bob", "1", "2"},
@@ -25,17 +25,17 @@ func Test_parseGroupLines(t *testing.T) {
 					{"dave", "2", "1"},
 				},
 			},
-			want:    []Groups{
+			want: []Groups{
 				{
 					1: &Group{
-						ID:      1,
+						ID: 1,
 						members: []*Member{
 							{Name: "alice"},
 							{Name: "bob"},
 						},
 					},
 					2: &Group{
-						ID:      2,
+						ID: 2,
 						members: []*Member{
 							{Name: "carol"},
 							{Name: "dave"},
@@ -44,14 +44,14 @@ func Test_parseGroupLines(t *testing.T) {
 				},
 				{
 					1: &Group{
-						ID:      1,
+						ID: 1,
 						members: []*Member{
 							{Name: "carol"},
 							{Name: "dave"},
 						},
 					},
 					2: &Group{
-						ID:      2,
+						ID: 2,
 						members: []*Member{
 							{Name: "alice"},
 							{Name: "bob"},
@@ -78,7 +78,7 @@ func Test_parseGroupLines(t *testing.T) {
 	}
 }
 
-func TestEval(t *testing.T) {
+func TestCountDupMemberPairs(t *testing.T) {
 	type args struct {
 		groupsList []Groups
 	}
@@ -89,7 +89,7 @@ func TestEval(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			args:    args{
+			args: args{
 				groupsList: []Groups{
 					{
 						1: &Group{
@@ -125,7 +125,7 @@ func TestEval(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			args:    args{
+			args: args{
 				groupsList: []Groups{
 					{
 						1: &Group{
@@ -163,7 +163,7 @@ func TestEval(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Eval(tt.args.groupsList)
+			got, err := CountDupMemberPairs(tt.args.groupsList)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Eval() error = %v, wantErr %v", err, tt.wantErr)
 				return
