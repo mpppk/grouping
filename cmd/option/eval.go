@@ -2,15 +2,16 @@ package option
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
 )
 
-// EvalCmdConfig is config for sum command
+// EvalCmdConfig is config for eval command
 type EvalCmdConfig struct {
 	File string
 }
 
-// NewEvalCmdConfigFromViper generate config for sum command from viper
+// NewEvalCmdConfigFromViper generate config for eval command from viper
 func NewEvalCmdConfigFromViper(args []string) (*EvalCmdConfig, error) {
 	var conf EvalCmdConfig
 	if err := viper.Unmarshal(&conf); err != nil {

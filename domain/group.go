@@ -95,7 +95,7 @@ func CountDupMemberPairs(groupsList []Groups) (int, error) {
 func ParseGroupFile(filePath string) ([]Groups, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to open file from %s", filePath)
 	}
 	defer file.Close()
 

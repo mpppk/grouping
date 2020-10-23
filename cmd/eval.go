@@ -25,7 +25,12 @@ func newEvalCmd(fs afero.Fs) (*cobra.Command, error) {
 				return fmt.Errorf("failed to parse group file from %s: %w", conf.File, err)
 			}
 
-			fmt.Println(domain.CountDupMemberPairs(groupsList))
+			cnt, err := domain.CountDupMemberPairs(groupsList)
+			if err != nil {
+				return fmt.Errorf("failed to count dup member pairs: %w", err)
+			}
+
+			cmd.Println(cnt)
 
 			return nil
 		},
@@ -33,12 +38,11 @@ func newEvalCmd(fs afero.Fs) (*cobra.Command, error) {
 
 	registerEvalCommandFlags := func(cmd *cobra.Command) error {
 		flags := []option.Flag{
-			&option.BoolFlag{
+			&option.StringFlag{
 				BaseFlag: &option.BaseFlag{
 					Name:  "file",
 					Usage: "file",
 				},
-				Value: false,
 			},
 		}
 		return option.RegisterFlags(cmd, flags)
