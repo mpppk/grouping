@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/mpppk/cli-template/cmd/option"
+	"github.com/mpppk/grouping/cmd/option"
 	"github.com/spf13/afero"
 	"os"
 	"sort"

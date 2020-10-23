@@ -11,7 +11,7 @@ import (
 
 // Version represents version of this tool
 const Version = "0.0.1"
-const slug = "mpppk/cli-template"
+const slug = "mpppk/grouping"
 
 // Do execute updating binary
 func Do() (bool, error) {
