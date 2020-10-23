@@ -2,7 +2,6 @@ SHELL = /bin/bash
 
 .PHONY: setup
 setup:
-	go get github.com/google/wire/cmd/wire
 	go get github.com/goreleaser/goreleaser
 
 .PHONY: lint
@@ -26,12 +25,8 @@ coverage: generate
 codecov:  coverage
 	bash <(curl -s https://codecov.io/bash)
 
-.PHONY: wire
-wire:
-	go generate -tags=wireinject ./...
-
 .PHONY: generate
-generate: wire
+generate:
 	go generate ./...
 
 .PHONY: build
@@ -45,7 +40,3 @@ cross-build:
 .PHONY: install
 install:
 	go install
-
-.PHONY: circleci
-circleci:
-	circleci build -e GITHUB_TOKEN=$GITHUB_TOKEN
