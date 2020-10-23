@@ -13,5 +13,3 @@ func NewNumbersFromStringSlice(strNumbers []string) (model.Numbers, error) {
 	}
 	return model.NewNumbers(rawNumbers), nil
 }
-
-
