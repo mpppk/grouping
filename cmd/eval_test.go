@@ -14,8 +14,8 @@ func TestEval(t *testing.T) {
 		command string
 		want    string
 	}{
-		{command: "eval --file testdata/dup_groups", want: "2\n"},
-		{command: "eval --file testdata/no_dup_groups", want: "0\n"},
+		{command: "eval --file ../testdata/dup_groups.csv", want: "2\n"},
+		{command: "eval --file ../testdata/no_dup_groups.csv", want: "0\n"},
 	}
 
 	for _, c := range cases {
